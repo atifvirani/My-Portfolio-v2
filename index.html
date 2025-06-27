@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohammed Atif - Portfolio</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#6366f1',secondary:'#4f46e5',dark:'#030712',darkSecondary:'#111827',darkTertiary:'#1f2937'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+overflow-x: hidden;
+}
+.glass-nav {
+backdrop-filter: blur(8px);
+background-color: rgba(255, 255, 255, 0.7);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+.hero-container {
+position: relative;
+height: 100vh;
+overflow: hidden;
+}
+#hero-canvas {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+}
+.scroll-indicator {
+animation: bounce 2s infinite;
+}
+@keyframes bounce {
+0%, 20%, 50%, 80%, 100% {
+transform: translateY(0);
+}
+40% {
+transform: translateY(-20px);
+}
+60% {
+transform: translateY(-10px);
+}
+}
+.project-card {
+transform-style: preserve-3d;
+transition: transform 0.5s;
+}
+.project-card:hover {
+transform: translateZ(20px) rotateX(5deg) rotateY(5deg);
+box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.skill-badge {
+animation: float 3s infinite ease-in-out;
+}
+@keyframes float {
+0% {
+transform: translateY(0px);
+}
+50% {
+transform: translateY(-10px);
+}
+100% {
+transform: translateY(0px);
+}
+}
+.wave {
+position: absolute;
+bottom: 0;
+left: 0;
+width: 100%;
+height: 100px;
+background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%236366f1" fill-opacity="0.2" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+background-size: cover;
+background-repeat: no-repeat;
+}
+.custom-cursor {
+position: fixed;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background-color: rgba(99, 102, 241, 0.5);
+pointer-events: none;
+z-index: 9999;
+transform: translate(-50%, -50%);
+transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+.avatar-container {
+perspective: 1000px;
+}
+.avatar {
+transform-style: preserve-3d;
+transition: transform 0.5s;
+}
+.social-icon {
+transition: transform 0.3s, box-shadow 0.3s;
+}
+.social-icon:hover {
+transform: translateY(-5px) scale(1.1);
+box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+}
+input, textarea {
+background: rgba(255, 255, 255, 0.8);
+backdrop-filter: blur(4px);
+border: 1px solid rgba(99, 102, 241, 0.2);
+transition: all 0.3s;
+}
+input:focus, textarea:focus {
+background: rgba(255, 255, 255, 0.95);
+border-color: rgba(99, 102, 241, 0.8);
+box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+.filter-btn.active {
+background-color: #6366f1;
+color: white;
+}
+.particles-container {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+overflow: hidden;
+}
+.particle {
+position: absolute;
+background-color: rgba(99, 102, 241, 0.2);
+border-radius: 50%;
+animation: particle-animation linear infinite;
+}
+@keyframes particle-animation {
+0% {
+transform: translateY(0) rotate(0deg);
+opacity: 1;
+}
+100% {
+transform: translateY(-100vh) rotate(360deg);
+opacity: 0;
+}
+}
+</style>
+</head>
+<body class="bg-dark text-gray-200 selection:bg-primary selection:text-white">
+<!-- Custom Cursor -->
+<div class="custom-cursor hidden md:block"></div>
+<!-- Navigation -->
+<nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 bg-dark/80 backdrop-blur-lg border-b border-gray-800">
+<div class="max-w-7xl mx-auto flex justify-between items-center">
+<a href="#" class="text-3xl font-['Pacifico'] text-primary">MA</a>
+<div class="hidden md:flex space-x-8">
+<a href="#home" class="text-gray-300 hover:text-primary transition-colors font-medium">Home</a>
+<a href="#about" class="text-gray-300 hover:text-primary transition-colors font-medium">About</a>
+<a href="#projects" class="text-gray-300 hover:text-primary transition-colors font-medium">Projects</a>
+<a href="#skills" class="text-gray-300 hover:text-primary transition-colors font-medium">Skills</a>
+<a href="#contact" class="text-gray-300 hover:text-primary transition-colors font-medium">Contact</a>
+</div>
+  <!--
+<div class="flex space-x-4">
+<a href="#" class="social-icon w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md">
+<i class="ri-github-line text-gray-800 ri-lg"></i>
+</a>
+<a href="#" class="social-icon w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md">
+<i class="ri-linkedin-line text-gray-800 ri-lg"></i>
+</a>
+<a href="#" class="social-icon w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md">
+<i class="ri-twitter-x-line text-gray-800 ri-lg"></i>
+</a>
+</div>
+<button class="md:hidden w-10 h-10 flex items-center justify-center" id="mobile-menu-button">
+<i class="ri-menu-line text-gray-800 ri-lg"></i>
+</button>
+</div>
+  -->
+  
+  
+  <div class="flex space-x-4">
+  <!-- GitHub -->
+  <a href="https://github.com/atifvirani" target="_blank" class="social-icon w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md">
+    <i class="ri-github-line text-gray-800 ri-lg"></i>
+  </a>
+
+  <!-- WhatsApp -->
+  <a href="https://wa.me/918249439483" target="_blank" class="social-icon w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md">
+    <i class="ri-whatsapp-line text-green-600 ri-lg"></i>
+  </a>
+
+  <!-- Email -->
+  <a href="mailto:atifviranizoom@gmail.com" class="social-icon w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md">
+    <i class="ri-mail-line text-red-600 ri-lg"></i>
+  </a>
+</div>
+  
+  
+  
+<!-- Mobile Menu -->
+<div class="md:hidden hidden absolute top-full left-0 w-full bg-white shadow-lg rounded-b-lg" id="mobile-menu">
+<div class="flex flex-col p-4 space-y-3">
+<a href="#home" class="text-gray-800 hover:text-primary transition-colors font-medium py-2">Home</a>
+<a href="#about" class="text-gray-800 hover:text-primary transition-colors font-medium py-2">About</a>
+<a href="#projects" class="text-gray-800 hover:text-primary transition-colors font-medium py-2">Projects</a>
+<a href="#skills" class="text-gray-800 hover:text-primary transition-colors font-medium py-2">Skills</a>
+<a href="#contact" class="text-gray-800 hover:text-primary transition-colors font-medium py-2">Contact</a>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section id="home" class="hero-container">
+<canvas id="hero-canvas"></canvas>
+<div class="particles-container"></div>
+<div class="relative h-full flex items-center justify-center px-6">
+<div class="max-w-7xl mx-auto text-center">
+<h1 class="text-5xl md:text-7xl font-bold mb-6 text-gray-100 bg-clip-text bg-gradient-to-r from-primary to-secondary">Mohammed Atif</h1>
+<p class="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto">Creative Developer & Designer crafting immersive digital experiences with cutting-edge technologies</p>
+<div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center">
+<a href="#projects" class="px-8 py-3 bg-primary text-white rounded-button font-medium shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 whitespace-nowrap">View My Work</a>
+<a href="#contact" class="px-8 py-3 bg-white text-primary border border-primary rounded-button font-medium shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 whitespace-nowrap">Get In Touch</a>
+</div>
+</div>
+</div>
+<div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 scroll-indicator">
+<div class="w-8 h-12 border-2 border-primary rounded-full flex justify-center">
+<div class="w-2 h-2 bg-primary rounded-full mt-2"></div>
+</div>
+</div>
+</section>
+<!-- About Me Section -->
+<section id="about" class="py-20 relative overflow-hidden bg-darkSecondary">
+<div class="particles-container"></div>
+<div class="max-w-7xl mx-auto px-6">
+<h2 class="text-4xl font-bold text-center mb-16 text-white">About <span class="text-primary">Me</span></h2>
+<div class="flex flex-col md:flex-row items-center gap-12">
+<div class="md:w-1/2 avatar-container">
+<div class="avatar relative w-64 h-64 md:w-80 md:h-80 mx-auto bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-white">
+  
+  <img src="atif.jpg" alt="Mohammed Atif" class="w-full h-full object-cover object-center">
+  
+  <!--<img src="https://readdy.ai/api/search-image?query=professional%20portrait%20photo%20of%20a%20young%20male%20web%20developer%20with%20a%20friendly%20smile%2C%20modern%20minimal%20style%2C%20high%20quality%20studio%20lighting%2C%20professional%20headshot%2C%20clean%20background&width=600&height=600&seq=1&orientation=squarish" alt="Mohammed Atif" class="w-full h-full object-cover object-top">
+  -->
+  
+</div>
+<div class="absolute -top-4 -right-4 skill-badge w-16 h-16 flex items-center justify-center bg-white rounded-full shadow-lg">
+<i class="ri-reactjs-line text-primary ri-xl"></i>
+</div>
+<div class="absolute -bottom-6 -left-6 skill-badge w-16 h-16 flex items-center justify-center bg-white rounded-full shadow-lg" style="animation-delay: 0.5s;">
+  <i class="ri-vuejs-line text-primary ri-xl"></i>
+</div>
+<div class="absolute -bottom-4 -right-4 skill-badge w-16 h-16 flex items-center justify-center bg-white rounded-full shadow-lg" style="animation-delay: 1s;">
+<i class="ri-javascript-line text-primary ri-xl"></i>
+</div>
+<div class="absolute -top-4 -left-4 skill-badge w-16 h-16 flex items-center justify-center bg-white rounded-full shadow-lg" style="animation-delay: 1.5s;">
+<i class="ri-html5-line text-primary ri-xl"></i>
+</div>
+</div>
+</div>
+<div class="md:w-1/2 mt-10 md:mt-0">
+<h3 class="text-2xl font-bold mb-4 text-gray-300">Student & Web Developer</h3>
+<p class="text-gray-200 mb-6 leading-relaxed">Hello! I'm Mohammed Atif, a dedicated student in 12th grade at Stewart Science College, Cuttack. I completed my schooling till 10th at Cambridge School. With a strong interest in both Web Development and AI Prompt Engineering, I have worked on several exciting projects while maintaining my academic focus.</p>
+<p class="text-gray-100 mb-8 leading-relaxed">Currently preparing for JEE, I balance my academic pursuits with my passion for technology. My goal is to blend creativity with logic to build impactful digital products while excelling in my studies. I believe in the power of continuous learning and pushing boundaries in both academics and technology.</p>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 bg-primary/10 text-primary rounded-full font-medium">Web Development</span>
+<span class="px-4 py-2 bg-primary/10 text-primary rounded-full font-medium">AI Prompt Engineering</span>
+<span class="px-4 py-2 bg-primary/10 text-primary rounded-full font-medium">JavaScript</span>
+<span class="px-4 py-2 bg-primary/10 text-primary rounded-full font-medium">HTML/CSS</span>
+<span class="px-4 py-2 bg-primary/10 text-primary rounded-full font-medium">Problem Solving</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Portfolio Projects -->
+<section id="projects" class="py-20 bg-dark">
+<div class="max-w-7xl mx-auto px-6">
+<h2 class="text-4xl font-bold text-center mb-6 text-gray-500">My <span class="text-primary">Projects</span></h2>
+<p class="text-gray-300 text-center mb-12 max-w-2xl mx-auto">Explore my recent work showcasing interactive experiences, creative designs, and technical innovations.</p>
+<div class="flex justify-center mb-10">
+<div class="inline-flex bg-gray-100 p-1 rounded-full">
+<button class="filter-btn active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="all">All Projects</button>
+<button class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="web">Web Apps</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Calculator Project -->
+<div class="project-card bg-darkSecondary rounded-lg overflow-hidden shadow-lg border border-gray-800" data-category="web">
+<div class="h-56 overflow-hidden">
+<img src="https://readdy.ai/api/search-image?query=modern%20calculator%20application%20interface%20with%20sleek%20design%2C%20gradient%20buttons%2C%20and%20clean%20number%20display%2C%20professional%20screenshot%20showing%20calculator%20functionality%20with%20soft%20shadows%20and%20minimal%20design&width=600&height=400&seq=1&orientation=landscape" alt="Calculator Project" class="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-110">
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="text-xl font-bold text-gray-400">Calculator</h3>
+<span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">Web</span>
+</div>
+<p class="text-gray-300 mb-4">A functional and responsive calculator built with HTML, CSS and Javascript, featuring a clean interface and smooth calculations.</p>
+<div class="flex justify-between items-center">
+<div class="flex space-x-2">
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-html5-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-css3-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-javascript-line text-gray-600"></i>
+</span>
+</div>
+<a href="Calculator/index.html" class="text-primary font-medium flex items-center">
+  View Project <i class="ri-arrow-right-line ml-1"></i>
+</a>
+</div>
+</div>
+</div>
+<!-- CSS Analog Clock -->
+<div class="project-card bg-darkSecondary rounded-lg overflow-hidden shadow-lg border border-gray-800" data-category="web">
+<div class="h-56 overflow-hidden">
+<img src="https://readdy.ai/api/search-image?query=elegant%20analog%20clock%20interface%20with%20minimalist%20design%2C%20showing%20hour%2C%20minute%2C%20and%20second%20hands%20with%20subtle%20shadows%2C%20professional%20screenshot%20of%20a%20modern%20clock%20face%20with%20clean%20typography&width=600&height=400&seq=2&orientation=landscape" alt="CSS Analog Clock" class="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-110">
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="text-xl font-bold text-gray-500">CSS Analog Clock</h3>
+<span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">Web</span>
+</div>
+<p class="text-gray-300 mb-4">A real-time analog clock using pure CSS and minimal JavaScript, featuring smooth hand movements and elegant design.</p>
+<div class="flex justify-between items-center">
+<div class="flex space-x-2">
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-html5-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-css3-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-timer-line text-gray-600"></i>
+</span>
+</div>
+
+ <a href="Css clock/index.html" class="text-primary font-medium flex items-center">
+  View Project <i class="ri-arrow-right-line ml-1"></i>
+</a> 
+  
+</div>
+</div>
+</div>
+<!-- E-commerce Website -->
+<div class="project-card bg-darkSecondary rounded-lg overflow-hidden shadow-lg border border-gray-800" data-category="web">
+<div class="h-56 overflow-hidden">
+<img src="https://readdy.ai/api/search-image?query=modern%20e-commerce%20website%20interface%20showing%20product%20grid%2C%20shopping%20cart%2C%20and%20checkout%20process%2C%20professional%20screenshot%20with%20clean%20product%20cards%20and%20intuitive%20navigation&width=600&height=400&seq=3&orientation=landscape" alt="E-commerce Website" class="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-110">
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="text-xl font-bold text-gray-500">E-commerce Website</h3>
+<span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">Web</span>
+</div>
+<p class="text-gray-300 mb-4">Fully functional front-end for an e-commerce platform with dynamic product pages, shopping cart, and checkout process.</p>
+<div class="flex justify-between items-center">
+<div class="flex space-x-2">
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-html5-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-css3-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-javascript-line text-gray-600"></i>
+</span>
+</div>
+
+  <a href="E-commerce/index.html" class="text-primary font-medium flex items-center">
+  View Project <i class="ri-arrow-right-line ml-1"></i>
+</a>
+  
+</div>
+</div>
+</div>
+<!-- iBilling App -->
+<div class="project-card bg-darkSecondary rounded-lg overflow-hidden shadow-lg border border-gray-800" data-category="web">
+<div class="h-56 overflow-hidden">
+<img src="https://readdy.ai/api/search-image?query=professional%20billing%20application%20interface%20with%20invoice%20management%2C%20payment%20tracking%2C%20and%20PDF%20generation%20features%2C%20clean%20dashboard%20layout%20with%20data%20tables%20and%20financial%20charts&width=600&height=400&seq=4&orientation=landscape" alt="iBilling App" class="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-110">
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h3 class="text-xl font-bold text-gray-500"> Billing App</h3>
+<span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">Web</span>
+</div>
+<p class="text-gray-300 mb-4">Custom web billing application developed to manage invoices and generate PDFs, featuring comprehensive financial tracking.</p>
+<div class="flex justify-between items-center">
+<div class="flex space-x-2">
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-html5-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-css3-line text-gray-600"></i>
+</span>
+<span class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+<i class="ri-file-pdf-line text-gray-600"></i>
+</span>
+</div>
+
+  
+  
+  <a href="billing-project-private/billing-project-private-files-main/billing-aap/index.html" class="text-primary font-medium flex items-center">
+  View Project <i class="ri-arrow-right-line ml-1"></i>
+</a>
+  
+  
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Skills -->
+<section id="skills" class="py-20 bg-darkSecondary">
+<div class="max-w-7xl mx-auto px-6">
+<h2 class="text-4xl font-bold text-center mb-6 text-gray-400">Technical <span class="text-primary">Skills</span></h2>
+<p class="text-gray-200 text-center mb-16 max-w-2xl mx-auto">My expertise spans across various technologies and tools, allowing me to create comprehensive digital solutions.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<div>
+<h3 class="text-2xl font-bold mb-6 text-gray-400">Development Skills</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-medium text-gray-400">HTML5</span>
+<span class="text-primary font-medium">85%</span>
+</div>
+<div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-medium text-gray-400">Java</span>
+<span class="text-primary font-medium">80%</span>
+</div>
+<div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 80%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-medium text-gray-400">JavaScript</span>
+<span class="text-primary font-medium">75%</span>
+</div>
+<div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-medium text-gray-400">C++</span>
+<span class="text-primary font-medium">70%</span>
+</div>
+<div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 70%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-medium text-gray-400">Python</span>
+<span class="text-primary font-medium">50%</span>
+</div>
+<div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 50%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-medium text-gray-400">CSS3</span>
+<span class="text-primary font-medium">75%</span>
+</div>
+<div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-medium text-gray-400">Bash Scripting & Linux</span>
+<span class="text-primary font-medium">45%</span>
+</div>
+<div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+</div>
+  
+  <!--
+<div>
+<h3 class="text-2xl font-bold mb-6 text-gray-800">Design & Tools</h3>
+<div id="skills-chart" class="w-full h-80"></div>
+<div class="mt-10 grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-2 skill-badge">
+<i class="ri-git-branch-line text-primary ri-xl"></i>
+</div>
+<span class="text-sm font-medium text-gray-700">Git</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-2 skill-badge" style="animation-delay: 0.3s;">
+<i class="ri-figma-line text-primary ri-xl"></i>
+</div>
+<span class="text-sm font-medium text-gray-700">Figma</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-2 skill-badge" style="animation-delay: 0.6s;">
+<i class="ri-blender-line text-primary ri-xl"></i>
+</div>
+<span class="text-sm font-medium text-gray-700">Blender</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-2 skill-badge" style="animation-delay: 0.9s;">
+<i class="ri-terminal-box-line text-primary ri-xl"></i>
+</div>
+<span class="text-sm font-medium text-gray-700">CLI</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-2 skill-badge" style="animation-delay: 1.2s;">
+<i class="ri-database-2-line text-primary ri-xl"></i>
+</div>
+<span class="text-sm font-medium text-gray-700">MongoDB</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full mb-2 skill-badge" style="animation-delay: 1.5s;">
+<i class="ri-cloud-line text-primary ri-xl"></i>
+</div>
+<span class="text-sm font-medium text-gray-700">AWS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+  -->
+  
+  
+<!-- Contact Section -->
+  
+  
+<section id="contact" class="py-20 bg-dark relative">
+<div class="wave"></div>
+<div class="max-w-7xl mx-auto px-6 relative z-10">
+<h2 class="text-4xl font-bold text-center mb-6 text-gray-400">Get In <span class="text-primary">Touch</span></h2>
+<p class="text-gray-200 text-center mb-16 max-w-2xl mx-auto">Have a project in mind or want to collaborate? Feel free to reach out and let's create something amazing together.</p>
+<div class="flex flex-col lg:flex-row gap-12">
+<div class="lg:w-1/2">
+  
+
+  
+
+ <!--
+<div class="lg:w-1/2">
+<div class="h-64 md:h-80 lg:h-full rounded-lg overflow-hidden mb-8">
+<div id="map" class="w-full h-full bg-cover bg-center" style="background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png');"></div>
+</div> -->
+ 
+  
+  
+  <form
+  action="https://formspree.io/f/xzzgyzzn"
+  method="POST"
+  accept-charset="UTF-8"
+  class="bg-darkSecondary p-8 rounded-lg shadow-lg transform transition-transform hover:-translate-y-2 border border-gray-800">
+
+  <div class="mb-6">
+    <label for="name" class="block text-gray-700 font-medium mb-2">Your Name</label>
+    <input type="text" name="name" id="name" class="w-full px-4 py-3 rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-primary/50 bg-darkTertiary text-gray-700 placeholder-gray-400" placeholder="John Doe" required>
+  </div>
+
+  <div class="mb-6">
+    <label for="email" class="block text-gray-700 font-medium mb-2">Email Address</label>
+    <input type="email" name="email" id="email" class="w-full px-4 py-3 rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-primary/50 bg-darkTertiary text-gray-700 placeholder-gray-400" placeholder="john@example.com" required>
+  </div>
+
+  <div class="mb-6">
+    <label for="subject" class="block text-gray-700 font-medium mb-2">Subject</label>
+    <input type="text" name="subject" id="subject" class="w-full px-4 py-3 rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-primary/50 bg-darkTertiary text-gray-700 placeholder-gray-400" placeholder="Project Inquiry">
+  </div>
+
+  <div class="mb-6">
+    <label for="message" class="block text-gray-700 font-medium mb-2">Message</label>
+    <textarea name="message" id="message" rows="5" class="w-full px-4 py-3 rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-primary/50 bg-darkTertiary text-gray-700 placeholder-gray-400" placeholder="Tell me about your project..." required></textarea>
+  </div>
+
+  <button type="submit" class="w-full py-3 bg-primary text-white rounded-button font-medium shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center whitespace-nowrap">
+    <i class="ri-send-plane-line mr-2"></i> Send Message
+  </button>
+</form>
+  
+  
+  
+
+<script>
+document.getElementById("contact-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+  
+  fetch("https://formspree.io/f/xzzgyzzn", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      subject: document.getElementById("subject").value,
+      message: document.getElementById("message").value
+    })
+  })
+  .then(response => {
+    if (response.ok) {
+      alert("Message sent!");
+    } else {
+      alert("Form submission failed.");
+    }
+  });
+});
+</script>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-darkSecondary p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-2 border border-gray-800">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-map-pin-line text-primary ri-lg"></i>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Location</h3>
+<p class="text-gray-100">Cuttack, India</p>
+</div>
+<div class="bg-darkSecondary p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-2 border border-gray-800">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-mail-line text-primary ri-lg"></i>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Email</h3>
+<a href="mailto:atifviranisoom@gmail.com" class="text-gray-100 hover:text-primary">atifviranisoom@gmail.com</a>
+</div>
+<div class="bg-darkSecondary p-6 rounded-lg shadow-md transform transition-transform hover:-translate-y-2 border border-gray-800">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
+<i class="ri-phone-line text-primary ri-lg"></i>
+</div>
+<h3 class="text-lg font-bold text-white mb-2">Phone</h3>
+<a href="tel:+918249439483" class="text-gray-100 hover:text-primary">+91 8249439483</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-dark text-white py-16 border-t border-gray-800">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col items-center text-center mb-8">
+<a href="#" class="text-3xl font-['Pacifico'] text-primary mb-4 inline-block">MA</a>
+<p class="text-gray-100 max-w-md">Mohammed Atif</p>
+<div class="flex space-x-6 mt-8">
+<a href="https://github.com/atifvirani" class="social-icon w-12 h-12 flex items-center justify-center bg-darkSecondary rounded-full hover:bg-primary transition-colors">
+<i class="ri-github-fill text-white ri-xl"></i>
+</a>
+<a href="https://wa.me/+918249439483" class="social-icon w-12 h-12 flex items-center justify-center bg-darkSecondary rounded-full hover:bg-primary transition-colors">
+<i class="ri-whatsapp-fill text-white ri-xl"></i>
+</a>
+<a href="mailto:atifviranisoom@gmail.com" class="social-icon w-12 h-12 flex items-center justify-center bg-darkSecondary rounded-full hover:bg-primary transition-colors">
+<i class="ri-mail-fill text-white ri-xl"></i>
+</a>
+</div>
+<div class="mt-8 text-gray-100">
+<p class="mb-2"><i class="ri-phone-line mr-2"></i>+91 8249439483</p>
+<p class="mb-2"><i class="ri-mail-line mr-2"></i>atifviranisoom@gmail.com</p>
+<p><i class="ri-map-pin-line mr-2"></i>Cuttack, India</p>
+</div>
+</div>
+<div class="pt-8 border-t border-gray-700 text-center">
+<p class="text-gray-100 text-sm">© 2025 Mohammed Atif. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<!-- Scroll to top button -->
+<button id="scroll-to-top" class="fixed bottom-8 right-8 w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all z-50">
+<i class="ri-arrow-up-line text-white ri-lg"></i>
+</button>
+<!-- Scripts -->
+<script id="mobile-menu-script">
+document.addEventListener('DOMContentLoaded', function() {
+const mobileMenuButton = document.getElementById('mobile-menu-button');
+const mobileMenu = document.getElementById('mobile-menu');
+mobileMenuButton.addEventListener('click', function() {
+mobileMenu.classList.toggle('hidden');
+if (mobileMenu.classList.contains('hidden')) {
+mobileMenuButton.innerHTML = '<i class="ri-menu-line text-gray-800 ri-lg"></i>';
+} else {
+mobileMenuButton.innerHTML = '<i class="ri-close-line text-gray-800 ri-lg"></i>';
+}
+});
+// Close mobile menu when clicking on a link
+const mobileLinks = mobileMenu.querySelectorAll('a');
+mobileLinks.forEach(link => {
+link.addEventListener('click', function() {
+mobileMenu.classList.add('hidden');
+mobileMenuButton.innerHTML = '<i class="ri-menu-line text-gray-800 ri-lg"></i>';
+});
+});
+});
+</script>
+<script id="scroll-to-top-script">
+document.addEventListener('DOMContentLoaded', function() {
+const scrollToTopButton = document.getElementById('scroll-to-top');
+window.addEventListener('scroll', function() {
+if (window.scrollY > 500) {
+scrollToTopButton.classList.remove('opacity-0', 'invisible');
+scrollToTopButton.classList.add('opacity-100', 'visible');
+} else {
+scrollToTopButton.classList.remove('opacity-100', 'visible');
+scrollToTopButton.classList.add('opacity-0', 'invisible');
+}
+});
+scrollToTopButton.addEventListener('click', function() {
+window.scrollTo({
+top: 0,
+behavior: 'smooth'
+});
+});
+});
+</script>
+<script id="project-filter-script">
+document.addEventListener('DOMContentLoaded', function() {
+const filterButtons = document.querySelectorAll('.filter-btn');
+const projectCards = document.querySelectorAll('.project-card');
+filterButtons.forEach(button => {
+button.addEventListener('click', function() {
+// Remove active class from all buttons
+filterButtons.forEach(btn => btn.classList.remove('active'));
+// Add active class to clicked button
+this.classList.add('active');
+const filter = this.getAttribute('data-filter');
+// Show/hide projects based on filter
+projectCards.forEach(card => {
+if (filter === 'all' || card.getAttribute('data-category') === filter) {
+card.style.display = 'block';
+} else {
+card.style.display = 'none';
+}
+});
+});
+});
+});
+</script>
+<script id="skills-chart-script">
+document.addEventListener('DOMContentLoaded', function() {
+const skillsChart = echarts.init(document.getElementById('skills-chart'));
+const option = {
+animation: false,
+backgroundColor: 'transparent',
+textStyle: {
+color: '#fff'
+},
+radar: {
+indicator: [
+{ name: 'Figma', max: 100 },
+{ name: 'Adobe XD', max: 100 },
+{ name: 'Sketch', max: 100 },
+{ name: 'Blender', max: 100 },
+{ name: 'Photoshop', max: 100 },
+{ name: 'Illustrator', max: 100 }
+],
+radius: '65%',
+splitNumber: 4,
+axisName: {
+color: '#333',
+fontSize: 12
+},
+splitArea: {
+areaStyle: {
+color: ['rgba(255, 255, 255, 0.9)', 'rgba(255, 255, 255, 0.8)',
+'rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.6)']
+}
+},
+axisLine: {
+lineStyle: {
+color: 'rgba(211, 211, 211, 0.8)'
+}
+},
+splitLine: {
+lineStyle: {
+color: 'rgba(211, 211, 211, 0.8)'
+}
+}
+},
+series: [{
+name: 'Design Skills',
+type: 'radar',
+data: [
+{
+value: [90, 85, 75, 70, 80, 75],
+name: 'Skill Level',
+areaStyle: {
+color: 'rgba(87, 181, 231, 0.1)'
+},
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)',
+width: 2
+},
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+}
+]
+}],
+tooltip: {
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ccc',
+textStyle: {
+color: '#333'
+},
+formatter: function(params) {
+return params.name + ': ' + params.value + '%';
+}
+}
+};
+skillsChart.setOption(option);
+window.addEventListener('resize', function() {
+skillsChart.resize();
+});
+});
+</script>
+<script id="custom-cursor-script">
+document.addEventListener('DOMContentLoaded', function() {
+const cursor = document.querySelector('.custom-cursor');
+if (window.innerWidth > 768) { // Only on desktop
+document.addEventListener('mousemove', function(e) {
+cursor.style.left = e.clientX + 'px';
+cursor.style.top = e.clientY + 'px';
+});
+// Expand cursor on clickable elements
+const clickableElements = document.querySelectorAll('a, button, input, textarea, .project-card, .social-icon');
+clickableElements.forEach(element => {
+element.addEventListener('mouseenter', function() {
+cursor.style.width = '40px';
+cursor.style.height = '40px';
+cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.2)';
+});
+element.addEventListener('mouseleave', function() {
+cursor.style.width = '20px';
+cursor.style.height = '20px';
+cursor.style.backgroundColor = 'rgba(99, 102, 241, 0.5)';
+});
+});
+}
+});
+</script>
+<script id="hero-animation-script">
+document.addEventListener('DOMContentLoaded', function() {
+// Create particles for background
+const particlesContainer = document.querySelector('.particles-container');
+for (let i = 0; i < 50; i++) {
+const particle = document.createElement('div');
+particle.classList.add('particle');
+// Random size between 5px and 20px
+const size = Math.random() * 15 + 5;
+particle.style.width = size + 'px';
+particle.style.height = size + 'px';
+// Random position
+particle.style.left = Math.random() * 100 + 'vw';
+particle.style.top = Math.random() * 100 + 'vh';
+// Random animation duration between 15s and 30s
+const duration = Math.random() * 15 + 15;
+particle.style.animationDuration = duration + 's';
+// Random delay
+particle.style.animationDelay = Math.random() * 5 + 's';
+particlesContainer.appendChild(particle);
+}
+// Initialize Three.js scene for hero section
+if (window.THREE) {
+const canvas = document.getElementById('hero-canvas');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({
+canvas: canvas,
+alpha: true,
+antialias: true
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
+// Create a simple 3D text or shape
+const geometry = new THREE.TorusKnotGeometry(5, 1.5, 100, 16);
+const material = new THREE.MeshBasicMaterial({
+color: 0x6366f1,
+wireframe: true
+});
+const torusKnot = new THREE.Mesh(geometry, material);
+scene.add(torusKnot);
+camera.position.z = 15;
+// Animation loop
+function animate() {
+requestAnimationFrame(animate);
+torusKnot.rotation.x += 0.003;
+torusKnot.rotation.y += 0.005;
+renderer.render(scene, camera);
+}
+animate();
+// Handle window resize
+window.addEventListener('resize', function() {
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
+});
+}
+});
+</script>
+<script id="avatar-animation-script">
+document.addEventListener('DOMContentLoaded', function() {
+const avatar = document.querySelector('.avatar');
+if (avatar) {
+avatar.addEventListener('mousemove', function(e) {
+const rect = this.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+const centerX = rect.width / 2;
+const centerY = rect.height / 2;
+const rotateY = ((x - centerX) / centerX) * 10;
+const rotateX = ((y - centerY) / centerY) * -10;
+this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+});
+avatar.addEventListener('mouseleave', function() {
+this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+});
+}
+});
+</script>
+<script id="smooth-scroll-script">
+document.addEventListener('DOMContentLoaded', function() {
+// Smooth scroll for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function(e) {
+e.preventDefault();
+const targetId = this.getAttribute('href');
+if (targetId === '#') return;
+const targetElement = document.querySelector(targetId);
+if (targetElement) {
+window.scrollTo({
+top: targetElement.offsetTop - 80, // Adjust for fixed header
+behavior: 'smooth'
+});
+}
+});
+});
+});
+</script>
+</body>
+</html>
